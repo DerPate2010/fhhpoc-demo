@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,13 +37,20 @@ public class Startup
 
         var scopesString = Configuration?.GetValue<string>("GraphScopes") ?? "User.Read";
         var scopesArray = scopesString.Split(' ');
+
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.All;
+        });
+
+
         services
             // Use OpenId authentication
             .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             // Specify this is a web app and needs auth code flow
             .AddMicrosoftIdentityWebApp(options => {
                 Configuration.Bind("AzureAd", options);
-
                 options.Prompt = "select_account";
 
                 options.Events.OnAuthenticationFailed = context => {
@@ -79,9 +87,14 @@ public class Startup
             // See https://github.com/AzureAD/microsoft-identity-web/wiki/token-cache-serialization
             .AddInMemoryTokenCaches();
 
+
+
+
         // Add custom services
         services.AddSingleton<SubscriptionStore>();
         services.AddSingleton<CertificateService>();
+
+
 
         // Add SignalR
         services
@@ -103,7 +116,7 @@ public class Startup
     {
         _ = app ?? throw new ArgumentException(nameof(app));
         _ = env ?? throw new ArgumentException(nameof(env));
-
+        app.UseForwardedHeaders();
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
