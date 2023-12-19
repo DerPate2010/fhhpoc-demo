@@ -89,6 +89,21 @@ public class TodoController : Controller
     [AuthorizeForScopes(ScopeKeySection = "GraphScopes")]
     public async Task<IActionResult> Create()
     {
+        // Get the user's ID and tenant ID from the user's identity
+        var userId = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+        _logger.LogInformation($"Authenticated user ID {userId}");
+        var tenantId = User.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+
+        // Get the user from Microsoft Graph
+        var user = await _graphClient.Me
+            .Request()
+            .GetAsync();
+
+        _logger.LogInformation($"Authenticated user: {user.DisplayName} ({user.Mail ?? user.UserPrincipalName})");
+        // Add the user's display name and email address to the user's
+        // identity.
+        User.AddUserGraphInfo(user);
+
         return View();
     }
 
