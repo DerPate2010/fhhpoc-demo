@@ -89,6 +89,13 @@ public class TodoController : Controller
     [AuthorizeForScopes(ScopeKeySection = "GraphScopes")]
     public async Task<IActionResult> Create()
     {
+        return View();
+    }
+
+    [HttpPost]
+    [AuthorizeForScopes(ScopeKeySection = "GraphScopes")]
+    public async Task<IActionResult> Create(TodoContent todoContent)
+    {
         try
         {
             // Get the user's ID and tenant ID from the user's identity
@@ -111,7 +118,7 @@ public class TodoController : Controller
 
             var requestBody = new TodoTask
             {
-                Title = "Test HIM 7 (z.d.A.)",
+                Title = todoContent.Title,
                 //Categories = new List<string>
                 //{
                 //    "Important",
@@ -120,18 +127,25 @@ public class TodoController : Controller
                 {
                     new LinkedResource
                     {
-                        WebUrl = "https://dev.azure.com/MA-fhhsk/fhhsk-apps/_sprints/backlog/HIM/fhhsk-apps/HIM/Sprint%2021?workitem=1067",
-                        ApplicationName = "Jira",
-                        DisplayName = "Jira",
+                        WebUrl = todoContent.WebUrl,
+                        ApplicationName = todoContent.ApplicationName,
+                        DisplayName = todoContent.DisplayName,
                     },
                 },
             };
+            if (!string.IsNullOrWhiteSpace(todoContent.Body )) {
+                requestBody.Body = new ItemBody()
+                {
+                    Content = todoContent.Body,
+                    ContentType = todoContent.IsHtml ? BodyType.Html: BodyType.Text
+                };
+            }
 
             // To initialize your graphClient, see https://learn.microsoft.com/en-us/graph/sdks/create-client?from=snippets&tabs=csharp
             var result = await _graphClient.Me.Todo.Lists[taskListId].Tasks.Request().AddAsync(requestBody);
 
 
-            return View(todo);
+            return View(todoContent);
         }
         catch (Exception ex)
         {
