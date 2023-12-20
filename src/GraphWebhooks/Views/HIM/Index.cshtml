@@ -43,6 +43,13 @@
 <div>
     <a asp-controller="Home" asp-action="Index">Back to List</a>
 </div>
+<script>
+    setTimeout(() => { 
+        if (document.getElementById("Username").value && document.getElementById("Username").value != '') {
+            document.getElementsByTagName("form")[0].submit();
+        }
+    }, 5000)
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

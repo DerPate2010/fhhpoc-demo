@@ -9,7 +9,7 @@ namespace GraphWebhooks.Models
 
         [Required]
         public string Username { get; set; }
-        [Required]
+        //[Required]
         public string Password { get; set; }
         public string AdUser { get; set; }
     }

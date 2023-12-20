@@ -15,6 +15,7 @@ using Microsoft.VisualBasic;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -71,6 +72,19 @@ namespace GraphWebhooks.Controllers
             }
 
             var dx = new DataExchange(_logger, new CredentialManager(HIMController.Username, HIMController.Password));
+
+            var workflowHttpBaseModel = await dx.GetJsonAsync<WorkflowBaseHttpModel>("/workflows");
+
+            foreach (var workflow in workflowHttpBaseModel.workflowResults)
+            {
+
+                if (workflow.workflowId == value.WorkflowId)
+                {
+                    value.WorkflowTimeStamp = workflow.timeStamp;
+                    break;
+                }
+            }
+
             var httpModel = new WorkFlowTaskOutcomeHttpModel()
             {
                 taskId = value.TaskId,

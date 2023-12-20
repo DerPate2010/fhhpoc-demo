@@ -21,6 +21,7 @@ namespace GraphWebhooks.Controllers
 
         public static string Username;
         public static string Password;
+        private static DateTime LastRun;
 
         public HIMController(ILogger<DataExchange> logger, GraphServiceClient graphClient, IWebHostEnvironment environment)
         {
@@ -45,7 +46,7 @@ namespace GraphWebhooks.Controllers
 
             SyncSettings syncSettings = new SyncSettings();
             syncSettings.AdUser = user.UserPrincipalName;
-            syncSettings.LastRun =DateTime.UtcNow;
+            LastRun = syncSettings.LastRun =DateTime.UtcNow;
 
             return View(syncSettings);
         }
@@ -66,6 +67,7 @@ namespace GraphWebhooks.Controllers
 
             _logger.LogInformation($"Authenticated user: {user.DisplayName} ({user.Mail ?? user.UserPrincipalName})");
             syncSettings.AdUser = user.UserPrincipalName;
+            syncSettings.LastRun = LastRun;
 
             if (string.IsNullOrWhiteSpace(syncSettings.Password))
             {
@@ -73,6 +75,7 @@ namespace GraphWebhooks.Controllers
             }
             Username = syncSettings.Username;
             Password = syncSettings.Password;
+
             var dx = new DataExchange(_logger, new CredentialManager(syncSettings.Username, syncSettings.Password));
             var workflowHttpBaseModel = await dx.GetJsonAsync<WorkflowBaseHttpModel>("/workflows");
 
@@ -97,7 +100,7 @@ namespace GraphWebhooks.Controllers
                     }
                 }
             }
-            syncSettings.LastRun = DateTime.UtcNow;
+            LastRun = syncSettings.LastRun = DateTime.UtcNow;
             return View(syncSettings);
         }
 
