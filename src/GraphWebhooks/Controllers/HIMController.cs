@@ -50,6 +50,8 @@ namespace GraphWebhooks.Controllers
             return View(syncSettings);
         }
 
+        public static Dictionary<string, string> HostOriginator = new Dictionary<string, string> { { "f10djr4h-44354.euw.devtunnels.ms", "063adc7a-6a8e-4a43-add4-4c95557b32a7" }, { "graphwebhooks20231220145436.azurewebsites.net", "6d265db3-3633-430b-bbc7-6d3e6e58c264" } };
+
         [HttpPost]
         [AuthorizeForScopes(ScopeKeySection = "GraphScopes")]
         public async Task<IActionResult> Index(SyncSettings syncSettings)
@@ -113,14 +115,18 @@ namespace GraphWebhooks.Controllers
             catch (Exception)
             {
             }
+
+            
+
             cardTemplate = cardTemplate.Replace("%taskTitle%", step.title);
             cardTemplate = cardTemplate.Replace("%taskAssignedTo%", user.DisplayName);
             cardTemplate = cardTemplate.Replace("%taskDueDate%", dueDate.ToLongDateString());
             cardTemplate = cardTemplate.Replace("%taskId%", task.taskId.ToString());
             cardTemplate = cardTemplate.Replace("%workflowId%", workflow.workflowId.ToString());
             cardTemplate = cardTemplate.Replace("%workflowTimeStamp%", workflow.timeStamp.ToString());
-            cardTemplate = cardTemplate.Replace("%actionUrl%", "https://f10djr4h-44354.euw.devtunnels.ms/api/Actions/");
+            cardTemplate = cardTemplate.Replace("%actionUrl%", "https://" + Request.Host.Value + "/api/Actions/");
             cardTemplate = cardTemplate.Replace("%taskApprover%", user.UserPrincipalName);
+            cardTemplate = cardTemplate.Replace("%originator%", HostOriginator[Request.Host.Value]);
 
             htmlTemplate = htmlTemplate.Replace("%cardcontent%", cardTemplate);
 

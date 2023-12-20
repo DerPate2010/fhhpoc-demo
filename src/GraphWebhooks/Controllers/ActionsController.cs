@@ -10,6 +10,11 @@ using HIM.Services.DataModels.WorkflowHttpModels;
 using Microsoft.O365.ActionableMessages.Utilities;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Build.Framework;
+using Microsoft.VisualBasic;
+using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -43,6 +48,7 @@ namespace GraphWebhooks.Controllers
         }
 
         // POST api/<ActionsController>
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ApprovalInfo value)
         {
@@ -53,7 +59,7 @@ namespace GraphWebhooks.Controllers
 
                 var validator = new ActionableMessageTokenValidator();
 
-                var validationResult = await validator.ValidateTokenAsync(token, null);
+                var validationResult = await validator.ValidateTokenAsync(token, "https://" + Request.Host.Value);
                 if (!validationResult.ValidationSucceeded)
                 {
                     return Unauthorized(validationResult.Exception.Message);
@@ -73,6 +79,7 @@ namespace GraphWebhooks.Controllers
                 comment = value.Comment,
                 workflowId = value.WorkflowId
             };
+
             await dx.PatchAsync($"/tasks/{value.TaskId}", httpModel, CancellationToken.None);
 
             string contentPath = _environment.ContentRootPath;
@@ -80,9 +87,21 @@ namespace GraphWebhooks.Controllers
             var template = value.TaskOutcome == 1 ? "approved" : "declined";
 
             var cardTemplate = System.IO.File.ReadAllText(Path.Combine(contentPath, "Templates\\" + template + ".json"));
+
+            //cardTemplate = cardTemplate.Replace("%taskTitle%", step.title);
+            //cardTemplate = cardTemplate.Replace("%taskAssignedTo%", user.DisplayName);
+            //cardTemplate = cardTemplate.Replace("%taskDueDate%", dueDate.ToLongDateString());
+            //cardTemplate = cardTemplate.Replace("%taskId%", task.taskId.ToString());
+            //cardTemplate = cardTemplate.Replace("%workflowId%", workflow.workflowId.ToString());
+            //cardTemplate = cardTemplate.Replace("%workflowTimeStamp%", workflow.timeStamp.ToString());
+            //cardTemplate = cardTemplate.Replace("%taskApprover%", user.UserPrincipalName);
+            cardTemplate = cardTemplate.Replace("%actionUrl%", "https://" + Request.Host.Value + "/api/Actions/");
+            cardTemplate = cardTemplate.Replace("%originator%", HIMController.HostOriginator[Request.Host.Value]);
+
             Response.Headers.Add("Content-Type", "application/json");
             Response.Headers.Add("CARD-UPDATE-IN-BODY", "true");
-            return Ok(cardTemplate);
+            
+            return Content(cardTemplate);
         }
 
         // PUT api/<ActionsController>/5

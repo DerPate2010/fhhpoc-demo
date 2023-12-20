@@ -2,7 +2,7 @@
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
   "type": "AdaptiveCard",
   "version": "1.0",
-  "originator": "fabb2800-7e2d-4c1a-ad89-dad6b1da2435",
+  "originator": "%originator%",
   "body": [
     {
       "type": "ColumnSet",
