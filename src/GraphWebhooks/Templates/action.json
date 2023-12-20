@@ -1,0 +1,149 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "originator": "fabb2800-7e2d-4c1a-ad89-dad6b1da2435",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "width": 1,
+          "items": [
+            {
+              "type": "Container",
+              "padding": {
+                "top": "None",
+                "bottom": "None",
+                "left": "Small",
+                "right": "None"
+              },
+              "items": [
+                {
+                  "type": "Image",
+                  "url": "https://www.hamburg.de/image/3435822/16x9/990/557/c8a2eaecd1f4e052f1b8c6972a5a020d/fU/logo-fhh-2016-rgb.jpg",
+                  "size": "Small"
+                }
+              ]
+            },
+            {
+              "type": "Container",
+              "backgroundImage": "https://filedepot.blob.core.windows.net/build/header.png",
+              "spacing": "Small",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Aktive Aufgabe: %taskTitle%",
+                  "size": "Medium",
+                  "color": "Light",
+                  "horizontalAlignment": "Left",
+                  "wrap": true
+                }
+              ],
+              "padding": "None"
+            },
+            {
+              "type": "Container",
+              "padding": "Small",
+              "items": [
+                {
+                  "type": "ColumnSet",
+                  "columns": [
+                    {
+                      "type": "Column",
+                      "width": "auto",
+                      "items": [
+                        {
+                          "type": "Image",
+                          "style": "Person",
+                          "url": "https://openclipart.org/image/800px/247320",
+                          "size": "Small"
+                        }
+                      ],
+                      "padding": "None"
+                    },
+                    {
+                      "type": "Column",
+                      "width": "stretch",
+                      "items": [
+                        {
+                          "type": "TextBlock",
+                          "text": "**%taskAssignedTo%** fällig am %taskDueDate%"
+                        },
+                        {
+                          "type": "TextBlock",
+                          "text": "Travel &amp; stay expenses for customer visit",
+                          "spacing": "None",
+                          "size": "Small"
+                        }
+                      ],
+                      "padding": "None"
+                    },
+                    {
+                      "type": "Column",
+                      "width": "auto",
+                      "items": [
+                        {
+                          "type": "TextBlock",
+                          "text": "",
+                          "size": "Medium",
+                          "weight": "Bolder"
+                        }
+                      ],
+                      "padding": "None"
+                    }
+                  ],
+                  "padding": "None"
+                },
+                {
+                  "type": "ActionSet",
+                  "id": "expenseActions",
+                  "horizontalAlignment": "Left",
+                  "actions": [
+                    {
+                      "type": "Action.Http",
+                      "method": "post",
+                      "url": "%actionUrl%",
+                      "title": "Zustimmen",
+                      "body": "{\"taskOutcome\": 1, \"taskId\": \"%taskId%\", \"comment\":\"{{comment.value}}\", \"workflowTimeStamp\": \"%workflowTimeStamp%\", \"workflowId\": \"%workflowId%\"}"
+                    },
+                    {
+                      "type": "Action.ShowCard",
+                      "title": "Ablehnen",
+                      "card": {
+                        "type": "AdaptiveCard",
+                        "body": [
+                          {
+                            "type": "Input.Text",
+                            "id": "comment",
+                            "isMultiline": true,
+                            "placeholder": "Kommentar"
+                          }
+                        ],
+                        "actions": [
+                          {
+                            "type": "Action.Http",
+                            "method": "post",
+                            "url": "%actionUrl%",
+                            "title": "OK",
+                            "body": "{\"taskOutcome\": 2, \"taskId\": \"%taskId%\", \"comment\":\"{{comment.value}}\", \"workflowTimeStamp\": \"%workflowTimeStamp%\", \"workflowId\": \"%workflowId%\"}"
+                          }
+                        ],
+                        "padding": "None",
+                        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "type": "Column",
+          "padding": "None"
+        }
+      ],
+      "padding": "None"
+    }
+  ],
+  "padding": "None"
+}
