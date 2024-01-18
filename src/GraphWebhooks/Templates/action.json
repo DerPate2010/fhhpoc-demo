@@ -13,10 +13,10 @@
             {
               "type": "Container",
               "padding": {
-                "top": "None",
+                "top": "medium",
                 "bottom": "None",
-                "left": "Small",
-                "right": "None"
+                "left": "medium",
+                "right": "medium"
               },
               "items": [
                 {
@@ -28,24 +28,17 @@
             },
             {
               "type": "Container",
-              "backgroundImage": "https://filedepot.blob.core.windows.net/build/header.png",
-              "spacing": "Small",
+              "padding": {
+                "top": "none",
+                "bottom": "medium",
+                "left": "medium",
+                "right": "medium"
+              },
               "items": [
                 {
-                  "type": "TextBlock",
                   "text": "Aktive Aufgabe: %taskTitle%",
-                  "size": "Medium",
-                  "color": "Light",
-                  "horizontalAlignment": "Left",
-                  "wrap": true
-                }
-              ],
-              "padding": "None"
-            },
-            {
-              "type": "Container",
-              "padding": "Small",
-              "items": [
+                  "type": "TextBlock"
+                },
                 {
                   "type": "ColumnSet",
                   "columns": [
@@ -72,7 +65,7 @@
                         },
                         {
                           "type": "TextBlock",
-                          "text": "Travel &amp; stay expenses for customer visit",
+                          "text": "%taskDescription%",
                           "spacing": "None",
                           "size": "Small"
                         }
@@ -85,7 +78,6 @@
                       "items": [
                         {
                           "type": "TextBlock",
-                          "text": "",
                           "size": "Medium",
                           "weight": "Bolder"
                         }

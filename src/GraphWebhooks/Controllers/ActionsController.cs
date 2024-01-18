@@ -85,6 +85,30 @@ namespace GraphWebhooks.Controllers
                 }
             }
 
+            WorkflowPhaseStepHttpModel wfStep =null;
+            WorkflowTaskHttpModel wfTask = null;
+            WorkflowResultHttpModel wf = null;
+            foreach (var workflow in workflowHttpBaseModel.workflowResults)
+            {
+
+                foreach (var phase in workflow.process.phases)
+                {
+                    foreach (var step in phase.steps)
+                    {
+                        foreach (var task in step.tasks)
+                        {
+                            if (task.taskId == value.TaskId)
+                            {
+                                wfStep = step;
+                                wfTask = task;
+                                wf = workflow;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             var httpModel = new WorkFlowTaskOutcomeHttpModel()
             {
                 taskId = value.TaskId,
@@ -101,16 +125,18 @@ namespace GraphWebhooks.Controllers
             var template = value.TaskOutcome == 1 ? "approved" : "declined";
 
             var cardTemplate = System.IO.File.ReadAllText(Path.Combine(contentPath, "Templates\\" + template + ".json"));
+            DateTime dueDate = DateTime.UtcNow.AddDays(1);
+            try
+            {
+                dueDate = new DateTime(long.Parse(wf.workflow.activeStepDueDate));
 
-            //cardTemplate = cardTemplate.Replace("%taskTitle%", step.title);
-            //cardTemplate = cardTemplate.Replace("%taskAssignedTo%", user.DisplayName);
-            //cardTemplate = cardTemplate.Replace("%taskDueDate%", dueDate.ToLongDateString());
-            //cardTemplate = cardTemplate.Replace("%taskId%", task.taskId.ToString());
-            //cardTemplate = cardTemplate.Replace("%workflowId%", workflow.workflowId.ToString());
-            //cardTemplate = cardTemplate.Replace("%workflowTimeStamp%", workflow.timeStamp.ToString());
-            //cardTemplate = cardTemplate.Replace("%taskApprover%", user.UserPrincipalName);
-            cardTemplate = cardTemplate.Replace("%actionUrl%", "https://" + Request.Host.Value + "/api/Actions/");
-            cardTemplate = cardTemplate.Replace("%originator%", HIMController.HostOriginator[Request.Host.Value]);
+            }
+            catch (Exception)
+            {
+            }
+            cardTemplate = HIMController.FillCardTemplate(wfTask, wfStep, wf, null, cardTemplate, dueDate, Request);
+
+            cardTemplate = cardTemplate.Replace("%actionDate%", DateTime.Now.ToLongDateString());
 
             Response.Headers.Add("Content-Type", "application/json");
             Response.Headers.Add("CARD-UPDATE-IN-BODY", "true");

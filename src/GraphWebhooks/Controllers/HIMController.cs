@@ -119,17 +119,7 @@ namespace GraphWebhooks.Controllers
             {
             }
 
-            
-
-            cardTemplate = cardTemplate.Replace("%taskTitle%", step.title);
-            cardTemplate = cardTemplate.Replace("%taskAssignedTo%", user.DisplayName);
-            cardTemplate = cardTemplate.Replace("%taskDueDate%", dueDate.ToLongDateString());
-            cardTemplate = cardTemplate.Replace("%taskId%", task.taskId.ToString());
-            cardTemplate = cardTemplate.Replace("%workflowId%", workflow.workflowId.ToString());
-            cardTemplate = cardTemplate.Replace("%workflowTimeStamp%", workflow.timeStamp.ToString());
-            cardTemplate = cardTemplate.Replace("%actionUrl%", "https://" + Request.Host.Value + "/api/Actions/");
-            cardTemplate = cardTemplate.Replace("%taskApprover%", user.UserPrincipalName);
-            cardTemplate = cardTemplate.Replace("%originator%", HostOriginator[Request.Host.Value]);
+            cardTemplate = FillCardTemplate(task, step, workflow, user, cardTemplate, dueDate, Request);
 
             htmlTemplate = htmlTemplate.Replace("%cardcontent%", cardTemplate);
 
@@ -157,6 +147,32 @@ namespace GraphWebhooks.Controllers
 
             // To initialize your graphClient, see https://learn.microsoft.com/en-us/graph/sdks/create-client?from=snippets&tabs=csharp
             await _graphClient.Users["himworkflow@fhhpoc23.onmicrosoft.com"].SendMail(Message).Request().PostAsync();
+        }
+
+        public static string FillCardTemplate(WorkflowTaskHttpModel task, WorkflowPhaseStepHttpModel step, WorkflowResultHttpModel workflow, User user, string cardTemplate, DateTime dueDate, Microsoft.AspNetCore.Http.HttpRequest request)
+        {
+            var upn = user == null ? "nessenst" : user.UserPrincipalName;
+            var userName = user == null ? "Steve Nessen" : user.DisplayName;
+
+
+            cardTemplate = cardTemplate.Replace("%taskTitle%", step.title);
+            cardTemplate = cardTemplate.Replace("%taskDescription%", step.description);
+            cardTemplate = cardTemplate.Replace("%taskAssignedTo%", userName);
+            cardTemplate = cardTemplate.Replace("%taskDueDate%", dueDate.ToLongDateString());
+            cardTemplate = cardTemplate.Replace("%taskId%", task.taskId.ToString());
+            cardTemplate = cardTemplate.Replace("%workflowId%", workflow.workflowId.ToString());
+            cardTemplate = cardTemplate.Replace("%workflowTimeStamp%", workflow.timeStamp.ToString());
+            cardTemplate = cardTemplate.Replace("%actionUrl%", "https://" + request.Host.Value + "/api/Actions/");
+            cardTemplate = cardTemplate.Replace("%taskApprover%", upn);
+            cardTemplate = cardTemplate.Replace("%originator%", HostOriginator[request.Host.Value]);
+            cardTemplate = cardTemplate.Replace("ä", "\\u00E4");
+            cardTemplate = cardTemplate.Replace("ö", "\\u00F6");
+            cardTemplate = cardTemplate.Replace("ü", "\\u00FC");
+            cardTemplate = cardTemplate.Replace("Ä", "\\u00C4");
+            cardTemplate = cardTemplate.Replace("Ö", "\\u00D6");
+            cardTemplate = cardTemplate.Replace("Ü", "\\u00DC");
+            cardTemplate = cardTemplate.Replace("ß", "\\u00DF");
+            return cardTemplate;
         }
     }
 }

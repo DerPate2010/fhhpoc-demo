@@ -1,71 +1,43 @@
 {
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
   "type": "AdaptiveCard",
-  "originator": "%originator%",
   "version": "1.0",
+  "originator": "%originator%",
   "body": [
     {
       "type": "ColumnSet",
       "columns": [
         {
-          "width": 6,
+          "width": 1,
           "items": [
             {
               "type": "Container",
               "padding": {
-                "left": "small"
+                "top": "medium",
+                "bottom": "None",
+                "left": "medium",
+                "right": "medium"
               },
               "items": [
                 {
                   "type": "Image",
-                  "url": "https://filedepot.blob.core.windows.net/build/logo.png"
+                  "url": "https://www.hamburg.de/image/3435822/16x9/990/557/c8a2eaecd1f4e052f1b8c6972a5a020d/fU/logo-fhh-2016-rgb.jpg",
+                  "size": "Small"
                 }
               ]
             },
             {
               "type": "Container",
-              "backgroundImage": "https://filedepot.blob.core.windows.net/build/header.png",
-              "spacing": "small",
+              "padding": {
+                "top": "none",
+                "bottom": "medium",
+                "left": "medium",
+                "right": "medium"
+              },
               "items": [
                 {
-                  "type": "TextBlock",
-                  "text": "Expense Report (ER-321377) for 1179 USD is available",
-                  "size": "medium",
-                  "color": "light",
-                  "horizontalAlignment": "left",
-                  "wrap": true
-                }
-              ]
-            },
-            {
-              "type": "Container",
-              "padding": "small",
-              "items": [
-                {
-                  "type": "ColumnSet",
-                  "columns": [
-                    {
-                      "type": "Column",
-                      "width": "auto",
-                      "items": [
-                        {
-                          "type": "Image",
-                          "id": "action_image",
-                          "url": "https://filedepot.blob.core.windows.net/build/approved.png"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "Column",
-                      "width": "auto",
-                      "items": [
-                        {
-                          "type": "TextBlock",
-                          "text": "by {user}"
-                        }
-                      ]
-                    }
-                  ]
+                  "text": "Aktive Aufgabe: %taskTitle%",
+                  "type": "TextBlock"
                 },
                 {
                   "type": "ColumnSet",
@@ -76,10 +48,12 @@
                       "items": [
                         {
                           "type": "Image",
-                          "url": "https://filedepot.blob.core.windows.net/profile/9.png",
-                          "style": "person"
+                          "style": "Person",
+                          "url": "https://openclipart.org/image/800px/247320",
+                          "size": "Small"
                         }
-                      ]
+                      ],
+                      "padding": "None"
                     },
                     {
                       "type": "Column",
@@ -87,15 +61,16 @@
                       "items": [
                         {
                           "type": "TextBlock",
-                          "text": "**Miguel Garcia** submitted on 8th May"
+                          "text": "**%taskAssignedTo%** fällig am %taskDueDate%"
                         },
                         {
                           "type": "TextBlock",
-                          "text": "Travel & stay expenses for customer visit",
-                          "spacing": "none",
-                          "size": "small"
+                          "text": "%taskDescription%",
+                          "spacing": "None",
+                          "size": "Small"
                         }
-                      ]
+                      ],
+                      "padding": "None"
                     },
                     {
                       "type": "Column",
@@ -103,57 +78,42 @@
                       "items": [
                         {
                           "type": "TextBlock",
-                          "text": "$1179",
-                          "size": "medium",
-                          "weight": "bolder"
+                          "size": "Medium",
+                          "weight": "Bolder"
                         }
-                      ]
+                      ],
+                      "padding": "None"
                     }
-                  ]
-                },
-                {
-                  "type": "ActionSet",
-                  "id": "expenseActions",
-                  "horizontalAlignment": "left",
-                  "actions": [
-                    {
-                      "type": "Action.Http",
-                      "method": "post",
-                      "url": "{actionUrl}",
-                      "title": "Approve",
-                      "body": "{\"action\": \"approve\", \"id\": \"ER-321377\", \"comment\":\"{{comment.value}}\", \"actionUrl\": \"{actionUrl}\", \"originator\": \"{originator}\"}"
-                    },
-                    {
-                      "type": "Action.ShowCard",
-                      "title": "Decline",
-                      "card": {
-                        "type": "AdaptiveCard",
-                        "body": [
-                          {
-                            "type": "Input.Text",
-                            "id": "comment",
-                            "isMultiline": true,
-                            "placeholder": "Comment (optional)"
-                          }
-                        ],
-                        "actions": [
-                          {
-                            "type": "Action.Http",
-                            "method": "post",
-                            "url": "{actionUrl}",
-                            "title": "OK",
-                            "body": "{\"action\": \"decline\", \"id\": \"ER-321377\", \"comment\":\"{{comment.value}}\", \"actionUrl\": \"{actionUrl}\", \"originator\": \"{originator}\"}"
-                          }
-                        ]
-                      }
-                    }
-                  ]
+                  ],
+                  "padding": "None"
                 }
               ]
             }
+          ],
+          "type": "Column",
+          "padding": "None"
+        }
+      ],
+      "padding": "None"
+    },
+    {
+      "type": "Container",
+      "padding": "None",
+      "items": [
+        {
+          "type": "Container",
+          "padding": "medium",
+          "items": [
+            {
+              "text": "Zugestimmt am %actionDate%",
+              "type": "TextBlock",
+              "spacing": "None"
+            }
           ]
         }
-      ]
+      ],
+      "style": "emphasis"
     }
-  ]
+  ],
+  "padding": "None"
 }
